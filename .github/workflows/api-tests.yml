@@ -1,0 +1,254 @@
+name: RESTful Booker API Test Automation
+
+on:
+  # Manual trigger with input options
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select test environment"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+      test_suite:
+        description: "Select test suite to execute"
+        required: true
+        default: "all_tests"
+        type: choice
+        options:
+          - smoke_tests
+          - functional_tests
+          - non_functional_tests
+          - positive_tests
+          - negative_tests
+          - auth_module_only
+          - crud_module_only
+          - search_module_only
+          - all_tests
+
+      python_version:
+        description: "Python version to use"
+        required: false
+        default: "3.12"
+        type: choice
+        options:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+
+      generate_artifact:
+        description: "Generate test report artifacts"
+        required: false
+        default: true
+        type: boolean
+
+  # Optional: Scheduled runs (uncomment if needed)
+  # schedule:
+  #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
+
+  # Optional: Trigger on push to main (uncomment if needed)
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+
+    env:
+      TEST_ENV: ${{ github.event.inputs.environment || 'production' }}
+      API_BASE_URL: ${{ vars.API_BASE_URL || 'https://restful-booker.herokuapp.com' }}
+      TIMEOUT: ${{ vars.TIMEOUT || '30' }}
+      RETRY_COUNT: ${{ vars.RETRY_COUNT || '3' }}
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python ${{ github.event.inputs.python_version || '3.12' }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ github.event.inputs.python_version || '3.12' }}
+          cache: "pip"
+
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔍 Verify Project Structure
+        run: |
+          echo "📂 Project Structure:"
+          ls -la
+          echo "📁 Features Directory:"
+          ls -la features/ || echo "No features directory found"
+          echo "📁 Tests Directory:"
+          ls -la tests/ || echo "No tests directory found"
+
+      - name: 🎯 Determine Test Suite Command
+        id: test_command
+        run: |
+          case "${{ github.event.inputs.test_suite || 'all_tests' }}" in
+            "smoke_tests")
+              echo "command=pytest -m smoke -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Smoke Tests" >> $GITHUB_OUTPUT
+              ;;
+            "functional_tests")
+              echo "command=pytest -m functional -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Functional Tests" >> $GITHUB_OUTPUT
+              ;;
+            "non_functional_tests")
+              echo "command=pytest -m security -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Non-Functional Tests" >> $GITHUB_OUTPUT
+              ;;
+            "positive_tests")
+              echo "command=pytest -m positive -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Positive Tests" >> $GITHUB_OUTPUT
+              ;;
+            "negative_tests")
+              echo "command=pytest -m negative -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Negative Tests" >> $GITHUB_OUTPUT
+              ;;
+            "auth_module_only")
+              echo "command=pytest tests/step_definitions/test_auth.py -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Auth Module Only" >> $GITHUB_OUTPUT
+              ;;
+            "crud_module_only")
+              echo "command=pytest tests/step_definitions/test_booking_crud.py -v" >> $GITHUB_OUTPUT
+              echo "suite_name=CRUD Module Only" >> $GITHUB_OUTPUT
+              ;;
+            "search_module_only")
+              echo "command=pytest tests/step_definitions/test_booking_search.py -v" >> $GITHUB_OUTPUT
+              echo "suite_name=Search Module Only" >> $GITHUB_OUTPUT
+              ;;
+            "all_tests"|*)
+              echo "command=pytest -v" >> $GITHUB_OUTPUT
+              echo "suite_name=All Tests" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: 📁 Create Reports Directory
+        run: |
+          mkdir -p reports
+          echo "Reports directory created"
+
+      - name: 🚀 Execute API Tests - ${{ steps.test_command.outputs.suite_name }}
+        run: |
+          echo "🎯 Executing: ${{ steps.test_command.outputs.suite_name }}"
+          echo "🌍 Environment: ${{ env.TEST_ENV }}"
+          echo "🔗 API URL: ${{ env.API_BASE_URL }}"
+          echo "📋 Command: ${{ steps.test_command.outputs.command }}"
+
+          # Generate timestamped report names
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          SUITE_NAME="${{ github.event.inputs.test_suite || 'all_tests' }}"
+
+          # Execute tests with reports
+          ${{ steps.test_command.outputs.command }} \
+            --html=reports/${SUITE_NAME}_${TIMESTAMP}_report.html \
+            --self-contained-html \
+            --json-report \
+            --json-report-file=reports/${SUITE_NAME}_${TIMESTAMP}_report.json \
+            --tb=short
+
+          echo "✅ Test execution completed"
+
+      - name: 📊 Generate Test Summary
+        if: always()
+        run: |
+          echo "## 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | ${{ env.TEST_ENV }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Test Suite** | ${{ steps.test_command.outputs.suite_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Python Version** | ${{ github.event.inputs.python_version || '3.12' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **API Base URL** | ${{ env.API_BASE_URL }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Execution Time** | $(date) |" >> $GITHUB_STEP_SUMMARY
+
+          # Add test results if JSON report exists
+          JSON_FILE=$(find reports -name "*.json" -type f | head -1)
+          if [ -f "$JSON_FILE" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## 📋 Test Results" >> $GITHUB_STEP_SUMMARY
+            
+            TOTAL=$(python -c "import json; data=json.load(open('$JSON_FILE')); print(data.get('summary', {}).get('total', 'N/A'))")
+            PASSED=$(python -c "import json; data=json.load(open('$JSON_FILE')); print(data.get('summary', {}).get('passed', 'N/A'))")
+            FAILED=$(python -c "import json; data=json.load(open('$JSON_FILE')); print(data.get('summary', {}).get('failed', 'N/A'))")
+            DURATION=$(python -c "import json; data=json.load(open('$JSON_FILE')); print(f\"{data.get('summary', {}).get('duration', 0):.1f}s\")")
+            
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| **Total Tests** | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Passed** | ✅ $PASSED |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Failed** | ❌ $FAILED |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Duration** | ⏱️ $DURATION |" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "$PASSED" = "$TOTAL" ] && [ "$TOTAL" != "0" ]; then
+              echo "| **Status** | 🎉 ALL TESTS PASSED! |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| **Status** | ⚠️ Some tests failed |" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+      - name: 📤 Upload Test Reports
+        if: always() && github.event.inputs.generate_artifact != 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.event.inputs.test_suite || 'all_tests' }}-${{ github.event.inputs.environment || 'production' }}
+          path: reports/
+          retention-days: 30
+
+      - name: 📋 List Generated Reports
+        if: always()
+        run: |
+          echo "📁 Generated Reports:"
+          ls -la reports/ || echo "No reports directory found"
+
+          if [ -d "reports" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## 📁 Generated Artifacts" >> $GITHUB_STEP_SUMMARY
+            echo "The following test reports have been generated:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            for file in reports/*; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                filesize=$(du -h "$file" | cut -f1)
+                echo "- 📄 **$filename** ($filesize)" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          fi
+
+      - name: 🔔 Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ TEST EXECUTION FAILED!"
+          echo "Check the logs above for detailed error information."
+          echo "Reports have been uploaded as artifacts for further analysis."
+          exit 1
+
+  # Optional: Slack/Teams notification job
+  notify:
+    needs: api-tests
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: 📢 Notification Summary
+        run: |
+          if [ "${{ needs.api-tests.result }}" == "success" ]; then
+            echo "✅ API Tests completed successfully!"
+            echo "Suite: ${{ github.event.inputs.test_suite || 'all_tests' }}"
+            echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+          else
+            echo "❌ API Tests failed!"
+            echo "Check the workflow logs for details."
+          fi

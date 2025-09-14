@@ -1,0 +1,91 @@
+{
+  "empty_firstname": {
+    "firstname": "",
+    "lastname": "Doe",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  },
+  "null_lastname": {
+    "firstname": "John",
+    "lastname": null,
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  },
+  "invalid_price": {
+    "firstname": "John",
+    "lastname": "Doe",
+    "totalprice": "not_a_number",
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  },
+  "invalid_depositpaid": {
+    "firstname": "John",
+    "lastname": "Doe",
+    "totalprice": 111,
+    "depositpaid": "not_boolean",
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  },
+  "invalid_date_format": {
+    "firstname": "John",
+    "lastname": "Doe",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "invalid_date",
+      "checkout": "2025-01-02"
+    }
+  },
+  "past_checkout_date": {
+    "firstname": "John",
+    "lastname": "Doe",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-02",
+      "checkout": "2025-01-01"
+    }
+  },
+  "missing_required_field": {
+    "lastname": "Doe",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  },
+  "sql_injection": {
+    "firstname": "'; DROP TABLE bookings; --",
+    "lastname": "Injection",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  },
+  "xss_attempt": {
+    "firstname": "<script>alert('XSS')</script>",
+    "lastname": "Attack",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "valid_booking": {
+    "firstname": "John",
+    "lastname": "Doe",
+    "totalprice": 111,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-01-01",
+      "checkout": "2025-01-02"
+    },
+    "additionalneeds": "Breakfast"
+  },
+  "minimal_booking": {
+    "firstname": "Jane",
+    "lastname": "Smith",
+    "totalprice": 200,
+    "depositpaid": false,
+    "bookingdates": {
+      "checkin": "2025-02-01",
+      "checkout": "2025-02-05"
+    }
+  },
+  "update_booking": {
+    "firstname": "UpdatedName",
+    "lastname": "UpdatedLastName",
+    "totalprice": 150,
+    "depositpaid": true,
+    "bookingdates": {
+      "checkin": "2025-03-01",
+      "checkout": "2025-03-03"
+    },
+    "additionalneeds": "Lunch"
+  },
+  "partial_update": {
+    "firstname": "PartialUpdate",
+    "totalprice": 300
+  }
+}

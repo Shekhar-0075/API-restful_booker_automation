@@ -1,0 +1,358 @@
+# ===================================================================
+# RESTful Booker API Test Automation - .gitignore
+# ===================================================================
+
+# ===================================================================
+# Python
+# ===================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+.env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ===================================================================
+# Test Reports and Output Files
+# ===================================================================
+# HTML Reports
+reports/
+*.html
+*_report.html
+
+# JSON Reports  
+*_report.json
+*.json.report
+test-results.json
+
+# XML Reports (JUnit, etc.)
+*.xml
+junit.xml
+test-results.xml
+
+# Allure Reports
+allure-results/
+allure-report/
+.allure/
+
+# Coverage Reports
+.coverage
+htmlcov/
+.coverage.*
+
+# Screenshots and Videos (if any)
+screenshots/
+videos/
+test-artifacts/
+
+# Enhanced Reports
+enhanced/
+enhanced_summary.json
+
+# ===================================================================
+# Logs
+# ===================================================================
+*.log
+logs/
+log/
+test.log
+pytest.log
+automation.log
+
+# ===================================================================
+# IDE and Editor Files
+# ===================================================================
+# Visual Studio Code
+.vscode/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===================================================================
+# Operating System Files
+# ===================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===================================================================
+# Temporary and Cache Files
+# ===================================================================
+# General temp files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.cache
+
+# Node modules (if any JS tools are used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===================================================================
+# Security and Sensitive Information
+# ===================================================================
+# Environment variables with secrets
+.env.secret
+.env.private
+secrets.json
+config/secrets/
+
+# API Keys and Tokens
+*.key
+*.pem
+*.p12
+auth_tokens.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# ===================================================================
+# Performance and Load Testing
+# ===================================================================
+# Locust
+locust_report.html
+locust_*.csv
+
+# JMeter
+*.jtl
+*.jmx.backup
+
+# ===================================================================
+# Documentation Build Files
+# ===================================================================
+# Sphinx documentation
+docs/_build/
+docs/build/
+docs/dist/
+
+# ===================================================================
+# Package and Distribution Files
+# ===================================================================
+# Wheel files
+*.whl
+
+# Compressed files
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# ===================================================================
+# Custom Project Specific
+# ===================================================================
+# Test data backups (but keep the original test data)
+data/backup/
+data/*.backup
+test_data_backup/
+
+# Performance test files (if you don't want to track them)
+performance_results/
+load_test_results/
+
+# Docker files (uncomment if using Docker)
+# docker-compose.override.yml
+# .dockerignore
+
+# Old test files
+test_performance.py.bak
+performance.feature.bak
+
+# Local configuration overrides
+config/local.json
+config/override.json
+
+# ===================================================================
+# GitHub Actions and CI/CD
+# ===================================================================
+# Don't ignore the workflow files themselves, but ignore any generated files
+# .github/workflows/ should be tracked
+.github/workflows/*.log
+
+# ===================================================================
+# Keep These Files (Negative Patterns)  
+# ===================================================================
+# Ensure important files are not ignored
+!.gitignore
+!.github/
+!requirements.txt
+!pytest.ini
+!conftest.py
+!README.md
+
+# Keep test data files
+!data/booking_data.json
+!data/invalid_data.json
+!data/test_schemas.json
+
+# Keep configuration files
+!config/config.py
+!config/environments.json
+
+# ===================================================================
+# END OF .gitignore
+# ===================================================================
