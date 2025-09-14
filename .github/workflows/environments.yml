@@ -1,8 +1,0 @@
-# This file documents environment variables that can be set in GitHub
-# Go to: Repository Settings → Environments → Create environment
-
-# Production Environment Variables:
-# API_BASE_URL: https://restful-booker.herokuapp.com
-# TIMEOUT: 45
-# RETRY_COUNT: 5
-
